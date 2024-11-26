@@ -31,11 +31,6 @@ public class Candidate {
     )
     private Set<Skill> skills;
 
-    @ManyToMany
-    @JoinTable(
-        name = "candidate_job",
-        joinColumns = @JoinColumn(name = "candidate_id"),
-        inverseJoinColumns = @JoinColumn(name = "job_id")
-    )
-    private Set<Job> appliedJobs;
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CandidateJob> appliedJobs;
 }
