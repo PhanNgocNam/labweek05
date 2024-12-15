@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Job Listings</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Job Listings</h1>
+        <a th:href="@{/jobs/create}" class="btn btn-primary">Post New Job</a>
+    </div>
+
+    <div class="mb-4">
+        <form th:action="@{/jobs}" method="get" class="d-flex">
+            <input type="text" name="keyword" th:value="${keyword}" 
+                   class="form-control me-2" placeholder="Search jobs..."
+                   hx-get="@{/jobs}"
+                   hx-trigger="keyup changed delay:500ms"
+                   hx-target="#jobs-list"
+                   hx-push-url="true">
+        </form>
+    </div>
+
+    <div id="jobs-list" class="row">
+        <div class="col-12" th:each="job : ${jobs}">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${job.jobTitle}">Job Title</h5>
+                    <p class="card-text" th:text="${job.jobDescription}">Description</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-primary me-2" 
+                                  th:text="${'Experience: ' + job.requiredExperience + ' years'}">
+                                Experience
+                            </span>
+                            <span class="badge bg-success" 
+                                  th:if="${job.salary != null}"
+                                  th:text="${'Salary: $' + job.salary}">
+                                Salary
+                            </span>
+                        </div>
+                        <a th:href="@{/jobs/{id}(id=${job.id})}" 
+                           class="btn btn-outline-primary">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12" th:if="${jobs.empty}">
+            <div class="alert alert-info">No jobs found.</div>
+        </div>
+    </div>
+
+    <nav th:if="${jobs.totalPages > 1}" aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${jobs.first ? 'disabled' : ''}">
+                <a class="page-link" th:href="@{/jobs(page=0)}">First</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, jobs.totalPages - 1)}"
+                th:classappend="${jobs.number == i ? 'active' : ''}">
+                <a class="page-link" th:href="@{/jobs(page=${i})}" th:text="${i + 1}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${jobs.last ? 'disabled' : ''}">
+                <a class="page-link" th:href="@{/jobs(page=${jobs.totalPages - 1})}">Last</a>
+            </li>
+        </ul>
+    </nav>
+</body>
+</html>

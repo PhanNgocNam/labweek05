@@ -1,0 +1,29 @@
+meta {
+  name: Create New Job Posting.
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8080/jobs
+  body: formUrlEncoded
+  auth: none
+}
+
+body:json {
+  {
+    "jobTitle": "Junior Backend Java Developer.",
+    "jobDescription": "Do what ever the boss told.",
+    "requiredExperience": 1, 
+    "salary": 1000,
+    "skillIds": [18, 8]
+  }
+}
+
+body:form-urlencoded {
+  jobTitle: Hi
+  jobDescription: asdasd
+  requiredExperience: 1
+  salary: 1
+  _skillIds: 1
+}

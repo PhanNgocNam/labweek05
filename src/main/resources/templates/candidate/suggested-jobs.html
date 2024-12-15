@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Công việc phù hợp</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-4">
+            <h2 class="mb-4">Công việc phù hợp với kỹ năng của bạn</h2>
+            
+            <!-- Skills section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Kỹ năng của bạn</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <span th:each="skill : ${candidateSkills}" 
+                              class="badge bg-primary p-2">
+                            <span th:text="${skill.name}"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suggested jobs -->
+            <div class="row">
+                <div th:each="job : ${suggestedJobs}" class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h5 class="card-title" th:text="${job.jobTitle}">Job Title</h5>
+                                <span class="badge bg-success" 
+                                      th:text="${#numbers.formatDecimal(job.matchPercentage, 0, 0)} + '% phù hợp'">
+                                    Match %
+                                </span>
+                            </div>
+                            
+                            <p class="card-text" th:text="${job.jobDescription}">Description</p>
+                            
+                            <!-- Company info -->
+                            <div class="mb-3">
+                                <i class="bi bi-building"></i>
+                                <span th:text="${job.company.companyName}">Company Name</span>
+                            </div>
+                            
+                            <!-- Required skills -->
+                            <div class="mb-3">
+                                <h6>Kỹ năng yêu cầu:</h6>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <span th:each="skill : ${job.skills}" 
+                                          th:class="${candidateSkills.contains(skill)} ? 'badge bg-success' : 'badge bg-secondary'">
+                                        <span th:text="${skill.name}"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Salary and experience -->
+                            <div class="d-flex justify-content-between text-muted">
+                                <span>
+                                    <i class="bi bi-cash"></i>
+                                    <span th:text="${#numbers.formatDecimal(job.salary, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                        Salary
+                                    </span>
+                                </span>
+                                <span>
+                                    <i class="bi bi-briefcase"></i>
+                                    <span th:text="${job.requiredExperience} + ' năm kinh nghiệm'">
+                                        Experience
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a th:href="@{'/jobs/' + ${job.jobId}}" class="btn btn-outline-primary">
+                                    Xem chi tiết
+                                </a>
+                                <form th:action="@{'/candidate/apply/' + ${job.jobId}}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-primary">Ứng tuyển ngay</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No jobs found message -->
+            <div th:if="${#lists.isEmpty(suggestedJobs)}" class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                Hiện tại chưa có công việc nào phù hợp với kỹ năng của bạn.
+                <a href="/candidate/skills" class="alert-link">Cập nhật kỹ năng</a> để nhận được gợi ý tốt hơn.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

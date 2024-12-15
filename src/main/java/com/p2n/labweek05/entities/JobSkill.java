@@ -3,17 +3,18 @@ package com.p2n.labweek05.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 
+
 @Entity
 @Data
-public class CandidateSkill {
+public class JobSkill {
 
     @EmbeddedId
-    private CandidateSkillId candidateSkillId;
+    private JobSkillId jobSkillId;
     
     @ManyToOne
-    @MapsId("candidateId")
-    @JoinColumn(name = "candidate_id", nullable = false)
-    private Candidate candidate;
+    @MapsId("jobId")
+    @JoinColumn(name = "job_id", nullable = false)
+    private Job job;
 
     
     @ManyToOne

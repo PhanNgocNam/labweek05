@@ -23,13 +23,8 @@ public class Candidate {
     @JoinColumn(name = "address_id", referencedColumnName = "addressId")
     private Address address;
 
-    @ManyToMany
-    @JoinTable(
-        name = "candidate_skill",
-        joinColumns = @JoinColumn(name = "candidate_id"),
-        inverseJoinColumns = @JoinColumn(name = "skill_id")
-    )
-    private Set<Skill> skills;
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CandidateSkill> candidates;
 
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CandidateJob> appliedJobs;

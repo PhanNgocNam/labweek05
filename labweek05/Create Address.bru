@@ -1,0 +1,20 @@
+meta {
+  name: Create Address
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:8080/api/addresses
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "street": "!@",
+    "city": "HCM",
+    "postalCode": 70000,
+    "countryCode": "VN"
+  }
+}

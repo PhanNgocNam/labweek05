@@ -10,28 +10,28 @@ import java.util.Set;
 public class Job {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
     private Long jobId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id", nullable = false)
+    @JoinColumn(name = "company_id", nullable = true)
     private Company company;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String jobTitle;
 
-    @Column(nullable = false)
+    @Column(name= "job_description", nullable = true)
     private String jobDescription;
 
     private Integer requiredExperience;
+
     private BigDecimal salary;
 
-    @ManyToMany
-    @JoinTable(
-        name = "job_skill",
-        joinColumns = @JoinColumn(name = "job_id"),
-        inverseJoinColumns = @JoinColumn(name = "skill_id")
-    )
-    private Set<Skill> skills;
+    @Column(nullable = false)
+    private boolean isActive = true;
+
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<JobSkill> skills;
 
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CandidateJob> appliedCandidates;

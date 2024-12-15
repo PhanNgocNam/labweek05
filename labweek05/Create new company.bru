@@ -1,0 +1,25 @@
+meta {
+  name: Create new company
+  type: http
+  seq: 7
+}
+
+post {
+  url: http://localhost:8080/api/companies
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "companyName": "Codihaus",
+    "contactEmail": "contact@codihaus.com",
+    "contactPhone": "0355118334",
+    "addressDTO": {
+      "street": "12 Pham Van Chieu",
+      "city": "HCM",
+      "postalCode": 70000,
+      "countryCode": "VN"
+    }
+  }
+}

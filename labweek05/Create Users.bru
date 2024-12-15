@@ -1,0 +1,19 @@
+meta {
+  name: Create Users
+  type: http
+  seq: 8
+}
+
+post {
+  url: http://localhost:8080/api/users
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "p2n",
+    "password": "jonouchi3700",
+    "email": "nam.phan2codihaus.com"
+  }
+}

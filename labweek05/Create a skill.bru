@@ -1,0 +1,17 @@
+meta {
+  name: Create a skill
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8080/api/skills
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "skillName": "System design"
+  }
+}
