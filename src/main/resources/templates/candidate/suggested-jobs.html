@@ -1,100 +1,153 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/main}">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Công việc phù hợp</title>
+    <meta charset="UTF-8">
+    <title>Công việc phù hợp với kỹ năng của bạn</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .job-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 20px;
+        }
+        .job-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .match-percentage {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .skill-badge {
+            background-color: #e9ecef;
+            color: #495057;
+            padding: 5px 10px;
+            border-radius: 15px;
+            margin: 2px;
+            display: inline-block;
+            font-size: 0.9em;
+        }
+        .job-meta {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        .job-meta i {
+            width: 20px;
+            text-align: center;
+            margin-right: 5px;
+        }
+        .section-title {
+            position: relative;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+        }
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .empty-state i {
+            font-size: 48px;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
-    <div layout:fragment="content">
-        <div class="container mt-4">
-            <h2 class="mb-4">Công việc phù hợp với kỹ năng của bạn</h2>
-            
-            <!-- Skills section -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">Kỹ năng của bạn</h5>
+    <div class="container mt-5">
+        <h1 class="section-title">Công việc phù hợp với kỹ năng của bạn</h1>
+        
+        <div th:if="${suggestedJobs.empty}" class="empty-state">
+            <i class="fas fa-search"></i>
+            <h3>Hiện tại chưa có công việc nào phù hợp với kỹ năng của bạn</h3>
+            <p class="text-muted">Hãy <a href="/candidate/skills" class="text-decoration-none">cập nhật kỹ năng</a> để nhận được gợi ý tốt hơn</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div th:each="job : ${suggestedJobs}" class="job-card card p-4 position-relative">
+                    <div class="match-percentage">
+                        <i class="fas fa-chart-line me-2"></i>
+                        <span th:text="${#numbers.formatDecimal(job.matchPercentage, 1, 0)} + '%'">95%</span>
+                    </div>
+                    
+                    <h3 class="card-title" th:text="${job.jobTitle}">Senior Software Engineer</h3>
+                    
+                    <div class="job-meta mb-3">
+                        <p class="mb-2">
+                            <i class="fas fa-building"></i>
+                            <span th:text="${job.companyName}">Tech Company</span>
+                        </p>
+                        <p class="mb-2">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span th:text="${#numbers.formatDecimal(job.salary, 1, 'COMMA', 2, 'POINT')} + ' VND'">50,000,000 VND</span>
+                        </p>
+                        <p class="mb-2">
+                            <i class="fas fa-briefcase"></i>
+                            <span th:text="${job.requiredExperience} + ' năm kinh nghiệm'">3-5 years</span>
+                        </p>
+                    </div>
+                    
+                    <div class="skills mb-3">
+                        <div th:each="skill : ${job.skills}" class="skill-badge" th:text="${skill.name}">Java</div>
+                    </div>
+                    
+                    <p class="card-text text-muted mb-4" th:text="${job.jobDescription}">
+                        We are looking for an experienced software engineer...
+                    </p>
+                    
+                    <div class="d-flex justify-content-end">
+                        <a th:href="@{'/jobs/' + ${job.jobId}}" class="btn btn-outline-primary">
+                            <i class="fas fa-info-circle me-2"></i>Xem chi tiết
+                        </a>
+                        <form th:action="@{'/candidate/apply/' + ${job.jobId}}" method="post" class="d-inline ms-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Ứng tuyển ngay
+                            </button>
+                        </form>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="d-flex flex-wrap gap-2">
-                        <span th:each="skill : ${candidateSkills}" 
-                              class="badge bg-primary p-2">
-                            <span th:text="${skill.name}"></span>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card p-4">
+                    <h4 class="mb-4">Kỹ năng của bạn</h4>
+                    <div th:if="${candidateSkills.empty}" class="text-muted">
+                        <p>Bạn chưa cập nhật kỹ năng</p>
+                        <a href="/candidate/skills" class="btn btn-primary mt-2">
+                            <i class="fas fa-plus-circle me-2"></i>Thêm kỹ năng
+                        </a>
+                    </div>
+                    <div th:if="${!candidateSkills.empty}" class="d-flex flex-wrap gap-2">
+                        <span th:each="skill : ${candidateSkills}" class="skill-badge">
+                            <i class="fas fa-check-circle me-1"></i>
+                            <span th:text="${skill.name}">Java</span>
                         </span>
                     </div>
                 </div>
             </div>
-
-            <!-- Suggested jobs -->
-            <div class="row">
-                <div th:each="job : ${suggestedJobs}" class="col-md-6 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <h5 class="card-title" th:text="${job.jobTitle}">Job Title</h5>
-                                <span class="badge bg-success" 
-                                      th:text="${#numbers.formatDecimal(job.matchPercentage, 0, 0)} + '% phù hợp'">
-                                    Match %
-                                </span>
-                            </div>
-                            
-                            <p class="card-text" th:text="${job.jobDescription}">Description</p>
-                            
-                            <!-- Company info -->
-                            <div class="mb-3">
-                                <i class="bi bi-building"></i>
-                                <span th:text="${job.company.companyName}">Company Name</span>
-                            </div>
-                            
-                            <!-- Required skills -->
-                            <div class="mb-3">
-                                <h6>Kỹ năng yêu cầu:</h6>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <span th:each="skill : ${job.skills}" 
-                                          th:class="${candidateSkills.contains(skill)} ? 'badge bg-success' : 'badge bg-secondary'">
-                                        <span th:text="${skill.name}"></span>
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <!-- Salary and experience -->
-                            <div class="d-flex justify-content-between text-muted">
-                                <span>
-                                    <i class="bi bi-cash"></i>
-                                    <span th:text="${#numbers.formatDecimal(job.salary, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
-                                        Salary
-                                    </span>
-                                </span>
-                                <span>
-                                    <i class="bi bi-briefcase"></i>
-                                    <span th:text="${job.requiredExperience} + ' năm kinh nghiệm'">
-                                        Experience
-                                    </span>
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <div class="card-footer bg-transparent">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a th:href="@{'/jobs/' + ${job.jobId}}" class="btn btn-outline-primary">
-                                    Xem chi tiết
-                                </a>
-                                <form th:action="@{'/candidate/apply/' + ${job.jobId}}" method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-primary">Ứng tuyển ngay</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- No jobs found message -->
-            <div th:if="${#lists.isEmpty(suggestedJobs)}" class="alert alert-info">
-                <i class="bi bi-info-circle me-2"></i>
-                Hiện tại chưa có công việc nào phù hợp với kỹ năng của bạn.
-                <a href="/candidate/skills" class="alert-link">Cập nhật kỹ năng</a> để nhận được gợi ý tốt hơn.
-            </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

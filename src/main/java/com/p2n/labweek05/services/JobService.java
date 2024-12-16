@@ -10,6 +10,7 @@ public interface JobService {
     JobDTO getJobById(Long id);
     Page<JobDTO> getAllJobs(Pageable pageable);
     List<JobDTO> getAllActiveJobs();
+    Page<JobDTO> getAllActiveJobsPaged(Pageable pageable);
     Page<JobDTO> searchJobs(String keyword, Pageable pageable);
     JobDTO updateJob(Long id, JobDTO jobDTO);
     void deleteJob(Long id);

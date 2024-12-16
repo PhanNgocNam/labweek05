@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +23,6 @@ public class UserServiceImp implements UserService {
 
     @Autowired
     private SkillRepository skillRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -56,8 +52,7 @@ public class UserServiceImp implements UserService {
         User user = new User();
         user.setUsername(createUserDTO.getUsername());
         user.setEmail(createUserDTO.getEmail());
-        user.setPassword(passwordEncoder.encode(createUserDTO.getPassword()));
-        user.setRole(createUserDTO.getRole());
+        user.setPassword(createUserDTO.getPassword());
 
         return userRepository.save(user);
     }

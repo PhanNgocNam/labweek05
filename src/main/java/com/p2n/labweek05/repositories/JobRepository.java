@@ -14,4 +14,5 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     Page<Job> findByJobTitleContainingIgnoreCase(String jobTitle, Pageable pageable);
     Page<Job> findByCompanyCompanyId(Long companyId, Pageable pageable);
     List<Job> findByIsActiveTrue();
+    Page<Job> findByIsActiveTrue(Pageable pageable);
 }

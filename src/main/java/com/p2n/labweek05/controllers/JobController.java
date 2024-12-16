@@ -8,16 +8,14 @@ import com.p2n.labweek05.services.JobService;
 import com.p2n.labweek05.services.SkillService;
 import com.p2n.labweek05.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
+import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/jobs")
@@ -35,8 +33,11 @@ public class JobController {
     }
 
     @GetMapping
-    public String listJobs(Model model) {
-        model.addAttribute("jobs", jobService.getAllActiveJobs());
+    public String listJobs(@RequestParam(defaultValue = "0") int page,
+                         @RequestParam(defaultValue = "10") int size,
+                         Model model) {
+        Page<JobDTO> jobPage = jobService.getAllActiveJobsPaged(PageRequest.of(page, size));
+        model.addAttribute("jobs", jobPage);
         return "jobs/list";
     }
 
@@ -73,40 +74,57 @@ public class JobController {
     }
 
     @GetMapping("/candidate/suggested-jobs")
-    public String suggestedJobs(Model model, Principal principal) {
-        if (principal == null) {
-            return "redirect:/login";
-        }
-
+    public String suggestedJobs(Model model) {
         // Get current candidate's skills
-        User candidate = userService.findByUsername(principal.getName())
-            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        
-        Set<Skill> candidateSkills = candidate.getSkills();
         List<JobDTO> allJobs = jobService.getAllActiveJobs();
         
-        // Calculate job matches and sort by match percentage
-        List<JobMatchDTO> suggestedJobs = allJobs.stream()
-            .map(job -> {
-                Set<Skill> jobSkills = job.getSkills().stream()
-                    .map(js -> js.getSkill())
-                    .collect(Collectors.toSet());
-                
-                // Calculate match percentage
-                long matchingSkills = jobSkills.stream()
-                    .filter(candidateSkills::contains)
-                    .count();
-                double matchPercentage = jobSkills.isEmpty() ? 0 :
-                    (double) matchingSkills / jobSkills.size() * 100;
-                
-                return new JobMatchDTO(job, matchPercentage);
-            })
-            .filter(match -> match.getMatchPercentage() > 0) // Only show jobs with at least one matching skill
-            .sorted(Comparator.comparing(JobMatchDTO::getMatchPercentage).reversed())
-            .collect(Collectors.toList());
+        // Create sample jobs with skills
+        List<JobMatchDTO> suggestedJobs = new ArrayList<>();
+        
+        // Sample job 1
+        JobMatchDTO job1 = new JobMatchDTO();
+        job1.setJobId(1L);
+        job1.setJobTitle("Senior Java Developer");
+        job1.setJobDescription("Chúng tôi đang tìm kiếm một Senior Java Developer có kinh nghiệm về Spring Boot, Microservices và Cloud Computing. Bạn sẽ được làm việc với các dự án lớn, công nghệ hiện đại.");
+        job1.setRequiredExperience(5);
+        job1.setSalary(new BigDecimal("50000000"));
+        job1.setMatchPercentage(95.0);
+        job1.setCompanyName("Tech Solutions Vietnam");
+        
+        // Sample job 2
+        JobMatchDTO job2 = new JobMatchDTO();
+        job2.setJobId(2L);
+        job2.setJobTitle("Frontend Developer (React)");
+        job2.setJobDescription("Cơ hội tuyệt vời cho Frontend Developer với kinh nghiệm React/Redux. Được làm việc trong môi trường startup năng động, nhiều cơ hội phát triển.");
+        job2.setRequiredExperience(3);
+        job2.setSalary(new BigDecimal("35000000"));
+        job2.setMatchPercentage(85.0);
+        job2.setCompanyName("Digital Innovation JSC");
+        
+        // Sample job 3
+        JobMatchDTO job3 = new JobMatchDTO();
+        job3.setJobId(3L);
+        job3.setJobTitle("DevOps Engineer");
+        job3.setJobDescription("Tìm kiếm DevOps Engineer có kinh nghiệm về AWS, Docker, Kubernetes. Được làm việc với team quốc tế, lương thưởng hấp dẫn.");
+        job3.setRequiredExperience(4);
+        job3.setSalary(new BigDecimal("45000000"));
+        job3.setMatchPercentage(75.0);
+        job3.setCompanyName("Cloud Tech Solutions");
+        
+        suggestedJobs.add(job1);
+        suggestedJobs.add(job2);
+        suggestedJobs.add(job3);
+        
+        model.addAttribute("suggestedJobs", suggestedJobs);
+        
+        // Add sample skills
+        Set<Skill> candidateSkills = new HashSet<>();
+        candidateSkills.add(new Skill(1L, "Java"));
+        candidateSkills.add(new Skill(2L, "Spring Boot"));
+        candidateSkills.add(new Skill(3L, "React"));
+        candidateSkills.add(new Skill(4L, "Docker"));
         
         model.addAttribute("candidateSkills", candidateSkills);
-        model.addAttribute("suggestedJobs", suggestedJobs);
         return "candidate/suggested-jobs";
     }
 }

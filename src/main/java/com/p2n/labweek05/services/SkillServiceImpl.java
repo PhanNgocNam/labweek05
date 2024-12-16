@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SkillServiceImpl implements SkillService {
@@ -28,37 +29,41 @@ public class SkillServiceImpl implements SkillService {
 
     @Override
     public SkillDTO getSkillById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSkillById'");
+        return skillRepository.findById(id)
+                .map(this::convertToDTO)
+                .orElseThrow(() -> new RuntimeException("Skill not found"));
     }
 
     @Override
     public SkillDTO updateSkill(SkillDTO skillDTO) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateSkill'");
+        Skill skill = skillRepository.findById(skillDTO.getSkillId())
+                .orElseThrow(() -> new RuntimeException("Skill not found"));
+        skill.setSkillName(skillDTO.getSkillName());
+        return convertToDTO(skillRepository.save(skill));
     }
 
     @Override
     public void deleteSkill(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteSkill'");
+        skillRepository.deleteById(id);
     }
 
     @Override
     public List<SkillDTO> getAllSkills() {
-        try {
-            List<Skill> skills = skillRepository.findAll();
-            return skills.stream()
-                    .map(this::convertToDTO)
-                    .toList();
-        } catch (Exception e) {
-            throw new RuntimeException("Error retrieving skills", e);
-        }
+        List<Skill> skills = skillRepository.findAll();
+        return skills.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Skill> getSkillsByIds(List<Long> ids) {
+        return skillRepository.findAllById(ids);
     }
 
     private SkillDTO convertToDTO(Skill skill) {
-        var skillDTO = new SkillDTO();
-        skillDTO.setSkillName(skill.getSkillName());
-        return skillDTO;
+        SkillDTO dto = new SkillDTO();
+        dto.setSkillId(skill.getSkillId());
+        dto.setSkillName(skill.getSkillName());
+        return dto;
     }
 }

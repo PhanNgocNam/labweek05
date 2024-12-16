@@ -8,51 +8,41 @@
 </head>
 <body>
     <div class="container mt-4">
-        <h2 th:text="${jobDTO.id == null ? 'Post New Job' : 'Edit Job'}">Post Job</h2>
+        <h2 th:text="${jobDTO.jobId == null ? 'Post New Job' : 'Edit Job'}">Post Job</h2>
         
-        <form th:action="${jobDTO.id == null ? '/jobs/create' : '/jobs/edit/' + jobDTO.id}" 
+        <form th:action="${jobDTO.jobId == null ? '/jobs/create' : '/jobs/edit/' + jobDTO.jobId}" 
               th:object="${jobDTO}" method="post" class="mt-4">
             
             <div class="mb-3">
-                <label for="title" class="form-label">Job Title</label>
-                <input type="text" class="form-control" id="title" th:field="*{title}" required>
+                <label for="jobTitle" class="form-label">Job Title</label>
+                <input type="text" class="form-control" id="jobTitle" th:field="*{jobTitle}" required>
             </div>
             
             <div class="mb-3">
-                <label for="company" class="form-label">Company</label>
-                <input type="text" class="form-control" id="company" th:field="*{company}" required>
+                <label for="jobDescription" class="form-label">Job Description</label>
+                <textarea class="form-control" id="jobDescription" th:field="*{jobDescription}" rows="3" required></textarea>
             </div>
-            
+
             <div class="mb-3">
-                <label for="location" class="form-label">Location</label>
-                <input type="text" class="form-control" id="location" th:field="*{location}" required>
+                <label for="requiredExperience" class="form-label">Required Experience (years)</label>
+                <input type="number" class="form-control" id="requiredExperience" th:field="*{requiredExperience}" required>
             </div>
-            
+
             <div class="mb-3">
-                <label for="salary" class="form-label">Salary Range</label>
-                <input type="text" class="form-control" id="salary" th:field="*{salary}">
+                <label for="salary" class="form-label">Salary</label>
+                <input type="number" step="0.01" class="form-control" id="salary" th:field="*{salary}" required>
             </div>
-            
+
             <div class="mb-3">
-                <label for="description" class="form-label">Job Description</label>
-                <textarea class="form-control" id="description" th:field="*{description}" rows="5" required></textarea>
-            </div>
-            
-            <div class="mb-3">
-                <label for="requiredSkills" class="form-label">Required Skills</label>
-                <select class="form-control select2" id="requiredSkills" th:field="*{requiredSkillIds}" multiple>
+                <label for="skills" class="form-label">Required Skills</label>
+                <select class="form-control" id="skills" th:field="*{skillIds}" multiple required>
                     <option th:each="skill : ${skills}"
                             th:value="${skill.id}"
                             th:text="${skill.name}">Skill Name</option>
                 </select>
             </div>
-            
-            <div class="mb-3">
-                <label for="expiryDate" class="form-label">Expiry Date</label>
-                <input type="datetime-local" class="form-control" id="expiryDate" th:field="*{expiryDate}">
-            </div>
-            
-            <button type="submit" class="btn btn-primary">Save Job</button>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
             <a href="/jobs" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
@@ -62,8 +52,8 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('.select2').select2({
-                placeholder: "Select required skills",
+            $('#skills').select2({
+                placeholder: 'Select required skills',
                 allowClear: true
             });
         });

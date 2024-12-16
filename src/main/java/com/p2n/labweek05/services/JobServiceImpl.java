@@ -90,6 +90,11 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    public Page<JobDTO> getAllActiveJobsPaged(Pageable pageable) {
+        return jobRepository.findByIsActiveTrue(pageable).map(this::convertToDTO);
+    }
+
+    @Override
     @Transactional
     public JobDTO updateJob(Long id, JobDTO jobDTO) {
         Job job = jobRepository.findById(id)

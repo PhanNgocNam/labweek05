@@ -1,35 +1,30 @@
 package com.p2n.labweek05.dtos;
 
+import com.p2n.labweek05.entities.Skill;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.util.Set;
 
 @Data
+@NoArgsConstructor
 public class JobMatchDTO {
-    private final JobDTO job;
-    private final double matchPercentage;
-    
+    private Long jobId;
+    private String jobTitle;
+    private String jobDescription;
+    private Integer requiredExperience;
+    private BigDecimal salary;
+    private Double matchPercentage;
+    private String companyName;
+    private Set<Skill> skills;
+
     public JobMatchDTO(JobDTO job, double matchPercentage) {
-        this.job = job;
+        this.jobId = job.getJobId();
+        this.jobTitle = job.getJobTitle();
+        this.jobDescription = job.getJobDescription();
+        this.requiredExperience = job.getRequiredExperience();
+        this.salary = job.getSalary();
         this.matchPercentage = matchPercentage;
-    }
-    
-    // Delegate methods to JobDTO for easy access in templates
-    public Long getJobId() {
-        return job.getJobId();
-    }
-    
-    public String getJobTitle() {
-        return job.getJobTitle();
-    }
-    
-    public String getJobDescription() {
-        return job.getJobDescription();
-    }
-    
-    public Integer getRequiredExperience() {
-        return job.getRequiredExperience();
-    }
-    
-    public java.math.BigDecimal getSalary() {
-        return job.getSalary();
     }
 }
